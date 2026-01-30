@@ -1,13 +1,21 @@
+require("dotenv").config(); // ✅ Load env variables
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-require("dotenv").config(); // ✅ LOAD ENV VARIABLES
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+
+// ================= SAFETY CHECK =================
+if (!process.env.MONGO_URI) {
+  console.error("❌ MONGO_URI not found in .env file");
+  process.exit(1);
+}
 
 // ================= MIDDLEWARE =================
 app.use(cors());
@@ -33,15 +41,18 @@ async function connectDB() {
 }
 
 // ================= SCHEMA =================
-const MenuSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  category: String,
-  subCategory: String,
-  rating: String,
-  orders: Number,
-  image: String
-});
+const MenuSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    category: { type: String, required: true },
+    subCategory: String,
+    rating: String,
+    orders: { type: Number, default: 0 },
+    image: String
+  },
+  { timestamps: true }
+);
 
 const Menu = mongoose.model("Menu", MenuSchema);
 
@@ -51,20 +62,31 @@ const storage = multer.diskStorage({
   filename: (_, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname))
 });
-const upload = multer({ storage });
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (_, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  }
+});
 
 // ================= ROUTES =================
 
-// GET all menu items
+// 🟢 Health check
+app.get("/", (req, res) => {
+  res.json({ status: "AmmaVanta backend running ✅" });
+});
+
+// 🟢 GET all menu items
 app.get("/menu", async (req, res) => {
   try {
     const items = await Menu.find();
     res.json(
       items.map(item => ({
         ...item._doc,
-        image: item.image
-          ? `http://localhost:${PORT}/uploads/${item.image}`
-          : ""
+        image: item.image ? `${BASE_URL}/uploads/${item.image}` : ""
       }))
     );
   } catch (err) {
@@ -72,7 +94,7 @@ app.get("/menu", async (req, res) => {
   }
 });
 
-// ADD menu item
+// 🟢 ADD menu item
 app.post("/menu", upload.single("image"), async (req, res) => {
   try {
     await Menu.create({
@@ -88,13 +110,13 @@ app.post("/menu", upload.single("image"), async (req, res) => {
     res.json({ message: "Item added successfully" });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: "Failed to add item" });
+    res.status(400).json({ error: err.message || "Failed to add item" });
   }
 });
 
 // ================= START SERVER =================
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running at ${BASE_URL}`);
   });
 });
