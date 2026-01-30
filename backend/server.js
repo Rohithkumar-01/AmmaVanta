@@ -4,9 +4,10 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+require("dotenv").config(); // ✅ LOAD ENV VARIABLES
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // ================= MIDDLEWARE =================
 app.use(cors());
@@ -19,14 +20,10 @@ if (!fs.existsSync("uploads")) {
 }
 
 // ================= DATABASE =================
-const MONGO_URI =
-  "mongodb+srv://ammavanta-in:ammavanta1@ammavanta.xkvafik.mongodb.net/ammavanta";
-
-// ✅ PROPER DB CONNECTION WITH LOGS
 async function connectDB() {
   try {
     console.log("⏳ Connecting to MongoDB Atlas...");
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB Atlas Connected");
   } catch (err) {
     console.error("❌ MongoDB Connection Failed");
@@ -95,7 +92,7 @@ app.post("/menu", upload.single("image"), async (req, res) => {
   }
 });
 
-// ================= START SERVER AFTER DB =================
+// ================= START SERVER =================
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
