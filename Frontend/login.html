@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AmmaVanta | Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-green-50 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white p-8 rounded-lg shadow w-full max-w-sm">
+    <h2 class="text-2xl font-bold text-green-700 text-center mb-6">
+      Admin Login
+    </h2>
+
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold">Username</label>
+        <input type="text" id="username"
+               class="w-full border rounded px-3 py-2"
+               required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold">Password</label>
+        <input type="password" id="password"
+               class="w-full border rounded px-3 py-2"
+               required>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+        Login
+      </button>
+
+      <p id="errorMsg" class="text-red-500 text-sm text-center"></p>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("errorMsg");
+
+    loginForm.onsubmit = function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // DEMO credentials
+      if (username === "admin" && password === "admin123") {
+        localStorage.setItem("isAdminLoggedIn", "true");
+        window.location.href = "admin.html";
+      } else {
+        errorMsg.textContent = "Invalid username or password";
+      }
+    };
+  </script>
+
+</body>
+</html>
