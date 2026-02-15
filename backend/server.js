@@ -1,4 +1,4 @@
-require("dotenv").config(); // ✅ Load env variables
+require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -13,7 +13,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // ================= SAFETY CHECK =================
 if (!process.env.MONGO_URI) {
-  console.error("❌ MONGO_URI not found in .env file");
+  console.error("❌ MONGO_URI not found in environment variables");
   process.exit(1);
 }
 
@@ -27,7 +27,7 @@ if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
 
-// ================= DATABASE =================
+// ================= DATABASE CONNECTION =================
 async function connectDB() {
   try {
     console.log("⏳ Connecting to MongoDB Atlas...");
@@ -56,16 +56,17 @@ const MenuSchema = new mongoose.Schema(
 
 const Menu = mongoose.model("Menu", MenuSchema);
 
-// ================= MULTER =================
+// ================= MULTER CONFIG =================
 const storage = multer.diskStorage({
   destination: "uploads/",
-  filename: (_, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname))
+  filename: (_, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
   fileFilter: (_, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
     else cb(new Error("Only image files are allowed"));
@@ -74,30 +75,47 @@ const upload = multer({
 
 // ================= ROUTES =================
 
-// 🟢 Health check
+// 🟢 Health Check
 app.get("/", (req, res) => {
-  res.json({ status: "AmmaVanta backend running ✅" });
+  res.status(200).json({
+    status: "AmmaVanta backend running ✅"
+  });
 });
 
-// 🟢 GET all menu items
+// 🟢 GET ALL MENU ITEMS
 app.get("/menu", async (req, res) => {
   try {
-    const items = await Menu.find();
-    res.json(
-      items.map(item => ({
-        ...item._doc,
-        image: item.image ? `${BASE_URL}/uploads/${item.image}` : ""
-      }))
-    );
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch menu" });
+    const items = await Menu.find().sort({ createdAt: -1 });
+
+    const formattedItems = items.map(item => ({
+      _id: item._id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      subCategory: item.subCategory,
+      rating: item.rating,
+      orders: item.orders,
+      createdAt: item.createdAt,
+      image: item.image
+        ? `${BASE_URL}/uploads/${item.image}`
+        : ""
+    }));
+
+    res.status(200).json(formattedItems);
+
+  } catch (error) {
+    console.error("❌ Error fetching menu:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch menu items"
+    });
   }
 });
 
-// 🟢 ADD menu item
+// 🟢 ADD MENU ITEM
 app.post("/menu", upload.single("image"), async (req, res) => {
   try {
-    await Menu.create({
+    const newItem = await Menu.create({
       name: req.body.name,
       price: req.body.price,
       category: req.body.category,
@@ -107,10 +125,43 @@ app.post("/menu", upload.single("image"), async (req, res) => {
       image: req.file ? req.file.filename : ""
     });
 
-    res.json({ message: "Item added successfully" });
+    res.status(201).json({
+      success: true,
+      message: "Item added successfully",
+      data: newItem
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err.message || "Failed to add item" });
+    console.error("❌ Error adding item:", err.message);
+    res.status(400).json({
+      success: false,
+      message: err.message || "Failed to add item"
+    });
+  }
+});
+
+// 🟢 DELETE MENU ITEM
+app.delete("/menu/:id", async (req, res) => {
+  try {
+    const deleted = await Menu.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Item deleted successfully"
+    });
+
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to delete item"
+    });
   }
 });
 
