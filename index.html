@@ -1,108 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>AmmaVanta | Pure Veg Restaurant</title>
+<meta charset="UTF-8">
+<title>AmmaVanta | Pure Veg Restaurant</title>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Custom Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-  </style>
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.7);
+}
+</style>
 </head>
 
-<body class="bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 min-h-screen">
+<body class="bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 min-h-screen relative overflow-x-hidden">
 
-  <!-- HERO SECTION -->
-  <section class="text-center pt-20 pb-16 px-6">
+<!-- Decorative Blobs -->
+<div class="absolute -top-20 -left-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40"></div>
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 rounded-full blur-3xl opacity-40"></div>
 
-    <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 tracking-wide">
-      AmmaVanta
-    </h1>
+<!-- NAVBAR -->
+<header class="glass sticky top-0 z-50 shadow-md">
+  <div class="max-w-7xl mx-auto flex justify-between items-center p-4">
+    <h1 class="text-2xl font-extrabold text-green-700">🌿 AmmaVanta</h1>
+    <nav class="space-x-6 font-semibold text-sm">
+      <a href="#" class="hover:text-green-700">Home</a>
+      <a href="menu.html" class="hover:text-green-700">Menu</a>
+      <a href="login.html" class="hover:text-green-700">Admin</a>
+    </nav>
+  </div>
+</header>
 
-    <p class="mt-4 text-lg text-gray-700 max-w-xl mx-auto">
-      🌿 Pure Vegetarian Indian Cuisine with Homely Taste & Love
-    </p>
+<!-- HERO SECTION -->
+<section class="text-center pt-24 pb-20 px-6 relative">
 
-    <div class="mt-8">
-      <a href="menu.html"
-         class="inline-block bg-green-700 text-white px-8 py-3 rounded-full shadow-lg hover:bg-green-800 transition transform hover:scale-105">
-        View Menu 🍽️
-      </a>
-    </div>
+  <h1 class="text-6xl md:text-7xl font-extrabold text-green-800 tracking-wide">
+    AmmaVanta
+  </h1>
 
-  </section>
+  <p class="mt-6 text-lg text-gray-700 max-w-xl mx-auto leading-relaxed">
+    🌿 Experience authentic homely vegetarian cuisine crafted with love, tradition and pure ingredients.
+  </p>
 
-  <!-- 🔥 MOST ORDERED ITEMS -->
-  <section class="px-6 pb-20">
+  <div class="mt-10">
+    <a href="menu.html"
+       class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-4 rounded-full shadow-xl hover:scale-110 transition transform duration-300 font-semibold">
+      Explore Menu 🍽️
+    </a>
+  </div>
 
-    <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">
-      🔥 Most Ordered Dishes
-    </h2>
+</section>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<!-- FEATURES SECTION -->
+<section class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10 text-center">
 
-      <!-- Item 1 -->
-      <div class="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-        <h3 class="text-xl font-semibold text-green-700">
-          Masala Dosa 🌱
-        </h3>
-        <p class="text-gray-600 mt-2">₹80</p>
-        <p class="text-yellow-500 mt-1">⭐⭐⭐⭐⭐</p>
-        <p class="text-sm text-gray-500 mt-1">
-          Ordered 320 times
-        </p>
-      </div>
+  <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition">
+    <div class="text-4xl mb-4">🌱</div>
+    <h3 class="font-bold text-lg text-green-700">100% Pure Veg</h3>
+    <p class="text-gray-600 mt-2 text-sm">Fresh and hygienic vegetarian meals made daily.</p>
+  </div>
 
-      <!-- Item 2 -->
-      <div class="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-        <h3 class="text-xl font-semibold text-green-700">
-          Paneer Butter Masala 🌱
-        </h3>
-        <p class="text-gray-600 mt-2">₹220</p>
-        <p class="text-yellow-500 mt-1">⭐⭐⭐⭐☆</p>
-        <p class="text-sm text-gray-500 mt-1">
-          Ordered 280 times
-        </p>
-      </div>
+  <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition">
+    <div class="text-4xl mb-4">🍛</div>
+    <h3 class="font-bold text-lg text-green-700">Traditional Taste</h3>
+    <p class="text-gray-600 mt-2 text-sm">Authentic South & North Indian flavors.</p>
+  </div>
 
-      <!-- Item 3 -->
-      <div class="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-        <h3 class="text-xl font-semibold text-green-700">
-          Veg Biryani 🌱
-        </h3>
-        <p class="text-gray-600 mt-2">₹180</p>
-        <p class="text-yellow-500 mt-1">⭐⭐⭐⭐☆</p>
-        <p class="text-sm text-gray-500 mt-1">
-          Ordered 250 times
-        </p>
-      </div>
+  <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition">
+    <div class="text-4xl mb-4">🚚</div>
+    <h3 class="font-bold text-lg text-green-700">Fast Delivery</h3>
+    <p class="text-gray-600 mt-2 text-sm">Hot and fresh meals delivered to your doorstep.</p>
+  </div>
 
-    </div>
-  </section>
+</section>
 
-  <!-- FOOTER -->
-  <footer class="bg-gradient-to-r from-green-700 to-emerald-700 text-white py-10 text-center">
+<!-- MOST ORDERED -->
+<section class="px-6 pb-20">
 
-    <h3 class="text-xl font-semibold tracking-wide">
-      AmmaVanta
-    </h3>
+  <h2 class="text-4xl font-extrabold text-gray-800 mb-12 text-center">
+    🔥 Most Ordered Dishes
+  </h2>
 
-    <p class="text-sm mt-2 text-green-100">
-      Pure Vegetarian Indian Cuisine
-    </p>
+  <div id="mostOrderedList"
+       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+  </div>
 
-    <p class="text-xs mt-4 text-green-200">
-      © 2026 AmmaVanta. All rights reserved.
-    </p>
+</section>
 
-  </footer>
+<!-- FOOTER -->
+<footer class="bg-gradient-to-r from-green-700 to-emerald-700 text-white py-12 text-center">
+
+  <h3 class="text-2xl font-semibold tracking-wide">
+    AmmaVanta
+  </h3>
+
+  <p class="text-sm mt-3 text-green-100">
+    Pure Vegetarian Indian Cuisine
+  </p>
+
+  <p class="text-xs mt-6 text-green-200">
+    © 2026 AmmaVanta. All rights reserved.
+  </p>
+
+</footer>
+
+<script>
+
+const BACKEND_URL = "https://ammavanta-backend.onrender.com"; 
+// 🔥 Replace with your Render backend URL
+
+const container = document.getElementById("mostOrderedList");
+const fallbackImage = "https://via.placeholder.com/400x250?text=No+Image";
+
+fetch(`${BACKEND_URL}/menu`)
+  .then(res => res.json())
+  .then(items => {
+
+    const topItems = items
+      .sort((a, b) => b.orders - a.orders)
+      .slice(0, 6);
+
+    topItems.forEach(item => {
+      container.innerHTML += `
+        <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-3 duration-300">
+
+          <div class="h-48 bg-gray-50 flex items-center justify-center overflow-hidden">
+            <img src="${item.image || fallbackImage}"
+                 onerror="this.src='${fallbackImage}'"
+                 class="h-full object-contain transition duration-300 hover:scale-110">
+          </div>
+
+          <div class="p-6 text-center">
+            <h3 class="text-lg font-bold text-green-700">${item.name} 🌱</h3>
+            <p class="text-gray-600 mt-2 text-lg font-semibold">₹${item.price}</p>
+            <p class="text-yellow-500 mt-1">${item.rating || ""}</p>
+            <p class="text-xs text-gray-500 mt-2">
+              Ordered ${item.orders} times
+            </p>
+          </div>
+
+        </div>
+      `;
+    });
+
+  })
+  .catch(err => {
+    container.innerHTML =
+      "<p class='text-center text-gray-500'>Failed to load items</p>";
+  });
+
+</script>
 
 </body>
 </html>
