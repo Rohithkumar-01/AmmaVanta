@@ -10,16 +10,16 @@
 <style>
 body { font-family: 'Poppins', sans-serif; }
 .glass {
-  backdrop-filter: blur(15px);
-  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(18px);
+  background: rgba(255,255,255,0.7);
 }
 </style>
 </head>
 
 <body class="bg-gradient-to-br from-green-50 via-emerald-100 to-green-200 min-h-screen relative overflow-x-hidden">
 
-<!-- Decorative Background -->
-<div class="absolute -top-20 -left-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40"></div>
+<!-- Background Decoration -->
+<div class="absolute -top-32 -left-32 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40"></div>
 <div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 rounded-full blur-3xl opacity-40"></div>
 
 <script>
@@ -105,13 +105,13 @@ function logout(){
 
 <script>
 
-const BACKEND_URL = "https://YOUR-BACKEND-NAME.onrender.com"; 
-// 🔥 Replace with your Render backend URL
+const BACKEND_URL = "https://YOUR-RENDER-BACKEND.onrender.com"; 
+// 🔥 Replace this with your actual Render backend URL
 
 const adminForm = document.getElementById("adminForm");
 const adminItemList = document.getElementById("adminItemList");
 
-adminForm.onsubmit = function(e){
+adminForm.onsubmit = async function(e){
   e.preventDefault();
 
   const formData = new FormData();
@@ -121,39 +121,52 @@ adminForm.onsubmit = function(e){
   formData.append("subCategory", itemSubCategory.value);
   formData.append("rating", itemRating.value);
   formData.append("orders", itemOrders.value);
-  formData.append("image", itemImage.files[0]);
 
-  fetch(`${BACKEND_URL}/menu`, {
-    method: "POST",
-    body: formData
-  })
-  .then(()=> {
+  if (itemImage.files.length > 0) {
+    formData.append("image", itemImage.files[0]);
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/menu`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) throw new Error("Failed to add item");
+
     adminForm.reset();
     loadItems();
     alert("✅ Item Added Successfully");
-  });
+
+  } catch (err) {
+    alert("❌ Error adding item");
+    console.error(err);
+  }
 };
 
-function loadItems(){
+async function loadItems(){
   adminItemList.innerHTML = "";
 
-  fetch(`${BACKEND_URL}/menu`)
-  .then(res=>res.json())
-  .then(items=>{
+  try {
+    const res = await fetch(`${BACKEND_URL}/menu`);
+    const items = await res.json();
+
     items.forEach(item=>{
       adminItemList.innerHTML += `
       <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition">
 
         <div class="h-40 bg-gray-50 flex items-center justify-center">
-          <img src="${item.image}"
+          <img src="${item.image || 'https://via.placeholder.com/200'}"
                onerror="this.src='https://via.placeholder.com/200'"
-               class="h-full object-contain">
+               class="h-full object-contain"> 
         </div>
 
         <div class="p-5">
           <h3 class="font-bold text-green-700">${item.name}</h3>
           <p class="text-sm text-gray-600 mt-1">₹${item.price}</p>
-          <p class="text-xs text-gray-500 mt-1">${item.category} • ${item.subCategory || ""}</p>
+          <p class="text-xs text-gray-500 mt-1">
+            ${item.category} ${item.subCategory ? "• " + item.subCategory : ""}
+          </p>
 
           <button onclick="deleteItem('${item._id}')"
                   class="mt-3 text-red-600 hover:underline text-sm">
@@ -164,12 +177,19 @@ function loadItems(){
       </div>
       `;
     });
-  });
+
+  } catch (err) {
+    console.error("Error loading items:", err);
+  }
 }
 
-function deleteItem(id){
-  fetch(`${BACKEND_URL}/menu/${id}`, { method: "DELETE" })
-  .then(()=> loadItems());
+async function deleteItem(id){
+  try {
+    await fetch(`${BACKEND_URL}/menu/${id}`, { method: "DELETE" });
+    loadItems();
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
 }
 
 loadItems();
