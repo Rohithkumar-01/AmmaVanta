@@ -9,16 +9,38 @@
 
 <style>
 body { font-family: 'Poppins', sans-serif; }
+
 .glass {
   backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.8);
+}
+
+.food-card {
+  transition: all 0.35s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+}
+
+.loading {
+  text-align: center;
+  font-weight: 600;
+  color: #047857;
+}
+
+.empty-message {
+  text-align: center;
+  color: #6b7280;
+  font-weight: 500;
 }
 </style>
 </head>
 
 <body class="bg-gradient-to-br from-green-50 via-emerald-100 to-green-200 min-h-screen relative overflow-x-hidden">
 
-<!-- Decorative Blur -->
+<!-- Background Decorations -->
 <div class="absolute -top-20 -left-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40"></div>
 <div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-300 rounded-full blur-3xl opacity-40"></div>
 
@@ -41,25 +63,31 @@ body { font-family: 'Poppins', sans-serif; }
 
 <section class="max-w-7xl mx-auto px-6 py-16 space-y-24">
 
+<!-- TIFFINS -->
 <div id="tiffins">
 <h2 class="text-2xl font-bold text-gray-800 mb-8">🥞 Breakfast / Tiffins</h2>
 <div id="tiffinsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+<p id="tiffinsEmpty" class="empty-message hidden">No Tiffins Available</p>
 </div>
 
+<!-- MEALS -->
 <div id="meals">
 <h2 class="text-2xl font-bold text-gray-800 mb-8">🍽 Veg Meals & Thali</h2>
 <div id="mealsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+<p id="mealsEmpty" class="empty-message hidden">No Meals Available</p>
 </div>
 
+<!-- RICE -->
 <div id="rice">
 <h2 class="text-2xl font-bold text-gray-800 mb-8">🍚 Rice Items</h2>
 <div id="riceList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+<p id="riceEmpty" class="empty-message hidden">No Rice Items Available</p>
 </div>
 
 </section>
 
 <script>
-const BACKEND_URL = "https://YOUR-BACKEND-NAME.onrender.com";
+const BACKEND_URL = "https://ammavanta-backend.onrender.com/.onrender.com";
 const fallbackImage = "https://via.placeholder.com/400x300?text=No+Image";
 
 function scrollToSection(id){
@@ -68,7 +96,7 @@ function scrollToSection(id){
 
 function createCard(item){
   return `
-  <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-3 duration-300">
+  <div class="food-card bg-white rounded-3xl overflow-hidden shadow-lg">
 
     <div class="h-56 bg-gray-50 flex items-center justify-center overflow-hidden">
       <img src="${item.image || fallbackImage}"
@@ -80,23 +108,64 @@ function createCard(item){
       <h3 class="text-lg font-bold text-green-700">${item.name} 🌱</h3>
       <p class="text-gray-600 mt-2 text-lg font-semibold">₹${item.price}</p>
       <p class="text-yellow-500 mt-1">${item.rating || ""}</p>
-      <p class="text-xs text-gray-500 mt-2">Ordered ${item.orders} times</p>
+      <p class="text-xs text-gray-500 mt-2">Ordered ${item.orders || 0} times</p>
     </div>
 
   </div>
   `;
 }
 
-fetch(`${BACKEND_URL}/menu`)
-.then(res=>res.json())
-.then(items=>{
-  const southItems = items.filter(i=>i.category==="south");
+// Loading indicator
+document.getElementById("tiffinsList").innerHTML = "<p class='loading'>Loading...</p>";
+document.getElementById("mealsList").innerHTML = "<p class='loading'>Loading...</p>";
+document.getElementById("riceList").innerHTML = "<p class='loading'>Loading...</p>";
 
-  southItems.forEach(item=>{
-    if(item.subCategory==="tiffins") tiffinsList.innerHTML += createCard(item);
-    if(item.subCategory==="meals") mealsList.innerHTML += createCard(item);
-    if(item.subCategory==="rice") riceList.innerHTML += createCard(item);
+fetch(`${BACKEND_URL}/menu`)
+.then(res => res.json())
+.then(items => {
+
+  // Clear loading
+  tiffinsList.innerHTML = "";
+  mealsList.innerHTML = "";
+  riceList.innerHTML = "";
+
+  const southItems = items.filter(i =>
+    i.category?.toLowerCase() === "south-indian"
+  );
+
+  let tiffinCount = 0;
+  let mealCount = 0;
+  let riceCount = 0;
+
+  southItems.forEach(item => {
+
+    const sub = item.subCategory?.toLowerCase();
+
+    if(sub === "tiffins"){
+      tiffinsList.innerHTML += createCard(item);
+      tiffinCount++;
+    }
+
+    if(sub === "meals"){
+      mealsList.innerHTML += createCard(item);
+      mealCount++;
+    }
+
+    if(sub === "rice"){
+      riceList.innerHTML += createCard(item);
+      riceCount++;
+    }
+
   });
+
+  if(tiffinCount === 0) document.getElementById("tiffinsEmpty").classList.remove("hidden");
+  if(mealCount === 0) document.getElementById("mealsEmpty").classList.remove("hidden");
+  if(riceCount === 0) document.getElementById("riceEmpty").classList.remove("hidden");
+
+})
+.catch(err => {
+  console.error("Error fetching menu:", err);
+  document.body.innerHTML += "<p class='text-center text-red-600 font-bold'>Failed to load menu</p>";
 });
 </script>
 
